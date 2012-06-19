@@ -20,13 +20,14 @@ int main() {
 		printf("please input n:");
 		scanf("%d", &n);
 		
-		for(int i=0; i<=n; i++) 
+		for(int i=0; i<=n; i++)  {
 			if(is_prime(i)) {
 				printf("%d ", i);
 				count ++;
 			}
-		printf("\nthe count / number = \t\t%f", 1 / ((float)count / (float)n));
-		printf("\nthe ln(n) = \t\t\t%f", log((double)n));
+        }
+		printf("\nthe count of primes = \t\t%f", ((double)count));
+		printf("\nthe n/ln(n) = \t\t\t%f", n/log((double)n));
 		printf("\n");
 	}
 }

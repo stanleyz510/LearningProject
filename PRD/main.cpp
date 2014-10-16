@@ -1,79 +1,93 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
-const int SAMPLES = 20;
-
 class RandomList {
 private :
-    vector<int> *group;
-    int getSize(){ return this->group->size(); }
-    int output(int i) { this->group->at(i) ++; return i; }
-    int translateTimesToPossibility(int times);
+    vector<int> *weights;            // possibilities.
+    int getSum();
 public:
-    RandomList();
     RandomList(int size);
+    int getSize(){ return this->weights->size(); }
+    void printPossibilities();
     int getRandomElement();
     int getPseudoRandomElement();
-    void outputDistribution();
 };
 
 RandomList::RandomList(int size){
-    this->group = new vector<int>(size);
+    this->weights = new vector<int>(size);
+    fill(this->weights->begin(), this->weights->end(), 1);
+    srand(time(0));
 }
 
-RandomList::RandomList() {
-    new (this)RandomList(20);
-}
-
-int RandomList::translateTimesToPossibility(int times){
-    if(times==0) {
-        return 1;
+int RandomList::getSum() {
+    int sum = 0;
+    for(int i : *this->weights) {
+        sum += i;
     }
-    else {
-        return times * 10;
+    return sum;
+}
+
+void RandomList::printPossibilities() {
+    cout << "The Possibility is : \n";
+    for(int i=0; i<this->getSize(); i++) {
+        cout << i << ": " << this->weights->at(i) << "\n";
     }
 }
 
 int RandomList::getRandomElement() {
     int i =  rand() % this->getSize();
-    return output(i);
+    return i;
 }
 
 int RandomList::getPseudoRandomElement() {
-    int range = 0;
-    for(int i=0; i<this->getSize(); i++) {
-        range += translateTimesToPossibility(this->group->at(i));
+    int randomindex = rand() % this->getSum();
+    int target = 0;
+    // found i when it stops
+    while(target < this->getSize() && (randomindex -= this->weights->at(target)) > 0) {
+        target++;
     }
-    int randomindex = rand() % range;
-    for(int i=0; i<this->getSize(); i++) {
-        if (randomindex - translateTimesToPossibility(this->group->at(i)) < 0) {
-            return i;
+    // auto calibrate the possibilities.
+    for(int i=0; i<this->weights->size(); i++) {
+        i != target ? this->weights->at(i) += 1000 : this->weights->at(i) = 1;
+    }
+    return target;
+}
+
+// Test function
+int main() {
+    int range, tries;
+    while(1) {
+        cout << "please input the range of selection: ";
+        cin >> range;
+        cout << "please input how many tries you like to have : ";
+        cin >> tries;
+        vector<int> *ro = new vector<int>(range);
+        vector<int> *pro = new vector<int>(range);
+        RandomList* rl = new RandomList(range);
+        RandomList* prl = new RandomList(range);
+
+        cout << tries << " times :" << endl;
+
+        for(int i=0; i<tries; i++) {
+            int r = prl->getPseudoRandomElement();
+            pro->at(r) ++;
+        }
+        for(int i=0; i<tries; i++) {
+            int r = rl->getRandomElement();
+            ro->at(r) ++;
+        }
+
+        cout << "Pseudo Random Distribution: \n";
+        for(int i=0; i<pro->size(); i++) {
+            cout << i << ": " << pro->at(i) << "\n";
+        }
+        cout << "Random Distribution: \n";
+        for(int i=0; i<ro->size(); i++) {
+            cout << i << ": " << ro->at(i) << "\n";
         }
     }
-    // for some reason, no pseudo random returned. just return a plan random number.
-    return this->getRandomElement();
-}
-
-void RandomList::outputDistribution() {
-    cout << "Total elements: " << getSize() << endl;
-    for(int i=0; i<getSize(); i++) {
-        cout << i << "\t: ";
-        cout << this->group->at(i);
-        cout << "\n";
-    }
-    cout.flush();
-}
-
-
-// Test
-int main() {
-    RandomList* rl = new RandomList();
-    cout << SAMPLES << " times :" << endl;
-    for(int i=0; i<SAMPLES; i++) {
-        rl->getPseudoRandomElement();
-    }
-    rl->outputDistribution();
 }

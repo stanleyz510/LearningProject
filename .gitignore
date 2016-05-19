@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/leetcode/344/ReverseString/.vs/ReverseString/v14
+/leetcode/344/ReverseString/Debug
+/leetcode/344/ReverseString/ReverseString.VC.VC.opendb
+/leetcode/344/ReverseString/ReverseString.VC.db
+/leetcode/344/ReverseString/ReverseString/Debug
